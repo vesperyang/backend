@@ -1,19 +1,15 @@
 import express from "express";
 import cors from "cors";
-import { createClient } from "redis";
+import { redisClient } from "./db/redisClient.js";
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "*"
+}));
 app.use(express.json());
 
-// Redis 客户端
-const redisClient = createClient();
-redisClient.on("error", (err) => console.log("Redis Client Error", err));
-await redisClient.connect();
-
-// 初始化 pageViews
-await redisClient.setNX("pageViews", "0");
-
+// 获取浏览量
 app.get("/api/stats", async (req, res) => {
   try {
     const pageViews = await redisClient.get("pageViews");
@@ -24,7 +20,7 @@ app.get("/api/stats", async (req, res) => {
   }
 });
 
-// 每次访问增加一次浏览量
+// 增加浏览量
 app.post("/api/pageview", async (req, res) => {
   try {
     const pageViews = await redisClient.incr("pageViews");
@@ -35,5 +31,6 @@ app.post("/api/pageview", async (req, res) => {
   }
 });
 
-const PORT = 8000;
+// 监听 Render 分配的端口
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
