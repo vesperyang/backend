@@ -1,4 +1,3 @@
-// server.js
 import 'dotenv/config'; // 必须最先加载
 import express from "express";
 import cors from "cors";
@@ -11,6 +10,11 @@ app.use(cors({
   origin: process.env.FRONTEND_URL || "*"
 }));
 app.use(express.json());
+
+// 根路径返回简单信息
+app.get("/", (req, res) => {
+  res.json({ message: "Backend is running. Use /api/stats and /api/pageview." });
+});
 
 // 获取浏览量
 app.get("/api/stats", async (req, res) => {
@@ -34,6 +38,6 @@ app.post("/api/pageview", async (req, res) => {
   }
 });
 
-// 监听 Render 分配的端口
+// Render 会分配 PORT
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

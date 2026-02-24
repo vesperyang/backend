@@ -1,4 +1,4 @@
-// db/redisClient.js
+import 'dotenv/config';
 import { Redis } from "@upstash/redis";
 
 if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
