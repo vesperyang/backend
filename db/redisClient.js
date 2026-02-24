@@ -1,16 +1,18 @@
 import { createClient } from "redis";
 
+// 命名导出，避免 default 报错
 export const redisClient = createClient({
   url: process.env.REDIS_URL,
   socket: {
-    tls: process.env.REDIS_URL?.startsWith("rediss://") || false,
-    rejectUnauthorized: false
+    tls: true,                 // Upstash rediss:// 需要 TLS
+    rejectUnauthorized: false, // 避免证书验证失败
   }
 });
 
 redisClient.on("error", (err) => console.error("Redis Client Error:", err));
 
-await redisClient.connect();
-
-// 初始化 pageViews
-await redisClient.setNX("pageViews", "0");
+// 异步初始化
+(async () => {
+  await redisClient.connect();
+  await redisClient.setNX("pageViews", "0");
+})();

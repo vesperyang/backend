@@ -4,6 +4,7 @@ import { redisClient } from "./db/redisClient.js";
 
 const app = express();
 
+// CORS 设置
 app.use(cors({
   origin: process.env.FRONTEND_URL || "*"
 }));
