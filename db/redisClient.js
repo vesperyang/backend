@@ -1,18 +1,11 @@
-import { createClient } from "redis";
+// db/redisClient.js
+import { Redis } from "@upstash/redis";
 
-// 命名导出，避免 default 报错
-export const redisClient = createClient({
-  url: process.env.REDIS_URL,
-  socket: {
-    tls: true,                 // Upstash rediss:// 需要 TLS
-    rejectUnauthorized: false, // 避免证书验证失败
-  }
+if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+  throw new Error("Missing Upstash Redis URL or TOKEN in environment variables!");
+}
+
+export const redisClient = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN
 });
-
-redisClient.on("error", (err) => console.error("Redis Client Error:", err));
-
-// 异步初始化
-(async () => {
-  await redisClient.connect();
-  await redisClient.setNX("pageViews", "0");
-})();

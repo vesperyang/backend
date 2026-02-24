@@ -1,3 +1,5 @@
+// server.js
+import 'dotenv/config'; // 必须最先加载
 import express from "express";
 import cors from "cors";
 import { redisClient } from "./db/redisClient.js";
@@ -13,7 +15,7 @@ app.use(express.json());
 // 获取浏览量
 app.get("/api/stats", async (req, res) => {
   try {
-    const pageViews = await redisClient.get("pageViews");
+    const pageViews = await redisClient.get("pageViews") || 0;
     res.json({ pageViews: Number(pageViews) });
   } catch (err) {
     console.error(err);
